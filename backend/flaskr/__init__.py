@@ -120,12 +120,12 @@ def create_app(test_config=None):
 
       question.delete()
       selection = Question.query.order_by(Question.id).all()
-      current_questions = paginate_questions(request, selection)
+      questions = [question.format() for question in selection]
       
       return jsonify({
         'success' : True,
         'deleted' : question_id,
-        'questions': current_questions,
+        'questions': questions,
         'total_questions': len(Question.query.all())
       })
     except:
@@ -154,12 +154,12 @@ def create_app(test_config=None):
       q.insert()
 
       selection = Question.query.order_by(Question.id).all()
-      current_questions = paginate_questions(request, selection)
+      questions = [question.format() for question in selection]
 
       return jsonify({
         'success': True,
         'created': q.id,
-        'questions': current_questions,
+        'questions': questions,
         'total_questions': len(Question.query.all())
       })
 
@@ -186,11 +186,11 @@ def create_app(test_config=None):
     search = body.get('searchTerm', None)
 
     selection = Question.query.order_by(Question.id).filter(Question.question.ilike('%{}%'.format(search)))
-    current_questions = paginate_questions(request, selection)
+    questions = [question.format() for question in selection]
 
     return jsonify({
       'success': True,
-      'questions': current_questions,
+      'questions': questions,
       'total_questions': len(selection.all())
     })
 
@@ -209,12 +209,12 @@ def create_app(test_config=None):
 
     questions = [question.format() for question in selection]
 
-    categories = Category.query.all()
+    # categories = Category.query.all()
 
-    categories_formatted = {}
+    # categories_formatted = {}
     
-    for category in categories:
-      categories_formatted[category.id] = category.type
+    # for category in categories:
+    #   categories_formatted[category.id] = category.type
 
 
     if len(questions) == 0:
@@ -224,7 +224,7 @@ def create_app(test_config=None):
       'success': True,
       'questions': questions,
       'total_questions': len(selection),
-      'categories': categories_formatted
+      # 'categories': categories_formatted
     })
 
   '''
@@ -266,7 +266,7 @@ def create_app(test_config=None):
     else:
       question = 0
 
-    print(previous_questions)
+    # print(previous_questions)
     # print(questions)
     # print(filtered_selection)
     # print(question)
@@ -309,7 +309,7 @@ def create_app(test_config=None):
       }), 400
 
   @app.errorhandler(405)
-  def not_found(error):
+  def not_allowed(error):
     return jsonify({
       "success": False, 
       "error": 405,
